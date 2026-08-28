@@ -16,18 +16,12 @@ jobs:
         java-version: '17'
 
     - name: Build with Gradle
-      run: |
-        if [ -f "gradlew" ]; then
-          chmod +x gradlew
-          ./gradlew assembleDebug
-        else
-          echo "Không tìm thấy gradlew, bỏ qua bước build tự động."
-        fi
+      run: gradle assembleDebug
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
-      continue-on-error: true
+        
       
