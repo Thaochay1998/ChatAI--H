@@ -15,22 +15,67 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Create Minimal Android Project
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Create Complete Android Project
       run: |
-        mkdir -p app/src/main
-        echo 'plugins { id "com.android.application" }' > app/build.gradle
-        echo 'android { namespace "com.example.chatai" compileSdk 34 defaultConfig { applicationId "com.example.chatai" minSdk 24 targetSdk 34 versionCode 1 versionName "1.0" } }' >> app/build.gradle
+        mkdir -p app/src/main/java/com/example/chatai
+        
+        # Tạo settings.gradle ở thư mục gốc
         echo 'rootProject.name = "ChatAI-H"' > settings.gradle
         echo 'include ":app"' >> settings.gradle
-        echo '<manifest package="com.example.chatai"/>' > app/src/main/AndroidManifest.log
+
+        # Tạo build.gradle cấp dự án gốc
+        echo 'plugins { id "com.android.application" version "8.1.1" apply false }' > build.gradle
+
+        # Tạo build.gradle cho app
+        echo 'plugins { id "com.android.application" }' > app/build.gradle
+        echo 'android {' >> app/build.gradle
+        echo '    namespace "com.example.chatai"' >> app/build.gradle
+        echo '    compileSdk 34' >> app/build.gradle
+        echo '    defaultConfig {' >> app/build.gradle
+        echo '        applicationId "com.example.chatai"' >> app/build.gradle
+        echo '        minSdk 24' >> app/build.gradle
+        echo '        targetSdk 34' >> app/build.gradle
+        echo '        versionCode 1' >> app/build.gradle
+        echo '        versionName "1.0"' >> app/build.gradle
+        echo '    }' >> app/build.gradle
+        echo '}' >> app/build.gradle
+
+        # Tạo AndroidManifest.xml chuẩn
+        echo '<?xml version="1.0" encoding="utf-8"?>' > app/src/main/AndroidManifest.xml
+        echo '<manifest xmlns:android="http://schemas.android.com/apk/res/android">' >> app/src/main/AndroidManifest.xml
+        echo '    <application android:label="ChatAI-H">' >> app/src/main/AndroidManifest.xml
+        echo '        <activity android:name=".MainActivity" android:exported="true">' >> app/src/main/AndroidManifest.xml
+        echo '            <intent-filter>' >> app/src/main/AndroidManifest.xml
+        echo '                <action android:name="android.intent.action.MAIN" />' >> app/src/main/AndroidManifest.xml
+        echo '                <category android:name="android.intent.category.LAUNCHER" />' >> app/src/main/AndroidManifest.xml
+        echo '            </intent-filter>' >> app/src/main/AndroidManifest.xml
+        echo '        </activity>' >> app/src/main/AndroidManifest.xml
+        echo '    </application>' >> app/src/main/AndroidManifest.xml
+        echo '</manifest>' >> app/src/main/AndroidManifest.xml
+
+        # Tạo MainActivity.java tối giản
+        echo 'package com.example.chatai;' > app/src/main/java/com/example/chatai/MainActivity.java
+        echo 'import android.app.Activity;' >> app/src/main/java/com/example/chatai/MainActivity.java
+        echo 'import android.os.Bundle;' >> app/src/main/java/com/example/chatai/MainActivity.java
+        echo 'public class MainActivity extends Activity {' >> app/src/main/java/com/example/chatai/MainActivity.java
+        echo '    @Override protected void onCreate(Bundle savedInstanceState) {' >> app/src/main/java/com/example/chatai/MainActivity.java
+        echo '        super.onCreate(savedInstanceState);' >> app/src/main/java/com/example/chatai/MainActivity.java
+        echo '    }' >> app/src/main/java/com/example/chatai/MainActivity.java
+        echo '}' >> app/src/main/java/com/example/chatai/MainActivity.java
 
     - name: Build with Gradle
-      run: gradle assembleDebug
+      run: |
+        export ANDROID_HOME=$HOME/android-sdk
+        gradle assembleDebug
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
+
         
       
