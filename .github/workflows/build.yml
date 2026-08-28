@@ -15,6 +15,15 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    - name: Create Minimal Android Project
+      run: |
+        mkdir -p app/src/main
+        echo 'plugins { id "com.android.application" }' > app/build.gradle
+        echo 'android { namespace "com.example.chatai" compileSdk 34 defaultConfig { applicationId "com.example.chatai" minSdk 24 targetSdk 34 versionCode 1 versionName "1.0" } }' >> app/build.gradle
+        echo 'rootProject.name = "ChatAI-H"' > settings.gradle
+        echo 'include ":app"' >> settings.gradle
+        echo '<manifest package="com.example.chatai"/>' > app/src/main/AndroidManifest.log
+
     - name: Build with Gradle
       run: gradle assembleDebug
 
